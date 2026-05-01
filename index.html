@@ -3,206 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário Social Media - Maio 2026</title>
+    <title>Dashboard Social Media 2026 - Maio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f4f4f9;
-            --card-bg: #ffffff;
-            --text-color: #333;
-            --not-started: #000000;
-            --started: #FFD700;
-            --finished: #28a745;
-            --accent: #6c5ce7;
+            --bg: #0a0a0c;
+            --card-bg: #16161a;
+            --accent: #00f2ff; /* Ciano Neon para autoridade */
+            --text: #ffffff;
+            --text-muted: #a0a0ab;
+            --not-started: #1a1a1a;
+            --started: #facc15;
+            --finished: #22c55e;
+            --border: rgba(255, 255, 255, 0.08);
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; }
-        h1 { text-align: center; color: var(--accent); }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Urbanist', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header { text-align: center; margin-bottom: 50px; max-width: 800px; }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; background: linear-gradient(90deg, #00f2ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { color: var(--text-muted); font-size: 1.1rem; }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 12px;
             max-width: 1200px;
-            margin: 0 auto;
+            width: 100%;
         }
 
-        .day-header { text-align: center; font-weight: bold; padding: 10px; background: var(--accent); color: white; border-radius: 5px; }
+        .weekday { text-align: center; color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; padding-bottom: 15px; }
 
         .day-card {
             background: var(--card-bg);
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            min-height: 120px;
-            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 150px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .day-card:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .day-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0, 242, 255, 0.1); }
 
-        .date-num { font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
-        .topic-preview { font-size: 0.85em; color: #555; font-weight: 500; }
-        
-        .status-dot {
-            height: 10px;
-            width: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
+        .day-header { display: flex; justify-content: space-between; align-items: center; }
+        .day-num { font-size: 1.4rem; font-weight: 700; color: var(--text-muted); }
+        .status-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); }
+
+        .day-topic { font-size: 0.9rem; font-weight: 600; line-height: 1.3; margin-top: 10px; color: #e4e4e7; }
+
+        /* Modal / Sidebar de Roteiro */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
         }
 
-        /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); overflow-y: auto; }
-        .modal-content { background: white; margin: 5% auto; padding: 30px; width: 70%; border-radius: 15px; line-height: 1.6; position: relative; }
-        .close { position: absolute; right: 20px; top: 10px; font-size: 28px; cursor: pointer; }
+        .modal-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            margin-left: auto;
+            padding: 40px;
+            overflow-y: auto;
+            border-left: 1px solid var(--accent);
+            box-shadow: -20px 0 50px rgba(0,0,0,0.5);
+            animation: slideIn 0.4s ease-out;
+        }
 
-        .status-select { margin: 15px 0; padding: 10px; border-radius: 5px; width: 200px; }
-        .script-box { background: #f9f9f9; padding: 15px; border-left: 4px solid var(--accent); margin-bottom: 20px; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        .close-btn { position: absolute; top: 20px; left: 20px; font-size: 1.5rem; color: var(--accent); cursor: pointer; background: none; border: none; }
+
+        .modal-title { font-size: 2rem; color: var(--accent); margin-bottom: 10px; }
+        .modal-subtitle { color: var(--text-muted); margin-bottom: 30px; font-weight: 400; }
+
+        .status-picker { margin-bottom: 30px; background: #000; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .status-picker select { background: transparent; color: white; border: 1px solid var(--accent); padding: 10px; border-radius: 8px; width: 100%; font-size: 1rem; cursor: pointer; }
+
+        .script-section { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); }
+        .script-section h3 { font-size: 1.2rem; color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         
-        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.8em; }
-        .bg-black { background: var(--not-started); }
-        .bg-yellow { background: var(--started); color: black; }
-        .bg-green { background: var(--finished); }
+        .slide-item { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 1rem; line-height: 1.5; }
+        .slide-item strong { color: var(--accent); }
 
-        @media (max-width: 768px) {
+        .video-box { white-space: pre-line; background: #000; padding: 20px; border-radius: 12px; color: #d1d5db; line-height: 1.8; font-style: italic; border: 1px dashed var(--accent); }
+
+        .cta-container { display: flex; flex-direction: column; gap: 10px; }
+        .cta-item { background: var(--accent); color: #000; padding: 12px 15px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; }
+
+        @media (max-width: 900px) {
             .calendar-grid { grid-template-columns: repeat(2, 1fr); }
-            .modal-content { width: 90%; }
+            .modal-content { max-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <h1>📅 Planejamento Social Media - Maio 2026</h1>
-    <p style="text-align: center;">Clique no dia para visualizar os roteiros e gerenciar o status.</p>
+<header>
+    <h1>Social Media Dashboard 2026</h1>
+    <p>Maio: Cronograma de Autoridade e Vendas no TikTok</p>
+</header>
 
-    <div class="calendar-grid" id="calendar">
-        <!-- Cabeçalhos -->
-        <div class="day-header">Dom</div><div class="day-header">Seg</div><div class="day-header">Ter</div>
-        <div class="day-header">Qua</div><div class="day-header">Qui</div><div class="day-header">Sex</div>
-        <div class="day-header">Sáb</div>
-        <!-- Dias serão gerados via JS -->
-    </div>
+<div class="calendar-grid" id="calendar">
+    <div class="weekday">Dom</div><div class="weekday">Seg</div><div class="weekday">Ter</div>
+    <div class="weekday">Qua</div><div class="weekday">Qui</div><div class="weekday">Sex</div><div class="weekday">Sáb</div>
+</div>
 
-    <!-- Modal de Roteiro -->
-    <div id="scriptModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle">Título do Conteúdo</h2>
-            <div id="modalStatusLabel"></div>
-            
-            <select id="statusSelector" class="status-select" onchange="updateStatus()">
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">✕ Fechar Painel</button>
+        <h2 class="modal-title" id="mTitle">Tema do Dia</h2>
+        <p class="modal-subtitle">Roteiro Completo para Carrossel e Vídeo Curto</p>
+
+        <div class="status-picker">
+            <label style="display:block; margin-bottom:10px; font-size:0.8rem; text-transform:uppercase; color:var(--accent);">Gerenciar Progresso:</label>
+            <select id="statusSelect" onchange="updateStatus()">
                 <option value="not-started">Não Iniciado (Preto)</option>
                 <option value="started">Iniciado (Amarelo)</option>
                 <option value="finished">Finalizado (Verde)</option>
             </select>
+        </div>
 
-            <div class="script-box">
-                <h3>📸 Roteiro de Carrossel (Prioridade)</h3>
-                <div id="carouselScript"></div>
-            </div>
+        <div class="script-section">
+            <h3>📸 Roteiro de Carrossel (7 Criativos)</h3>
+            <div id="mCarousel"></div>
+        </div>
 
-            <div class="script-box">
-                <h3>🎥 Roteiro de Vídeo (Opcional)</h3>
-                <div id="videoScript"></div>
-            </div>
+        <div class="script-section">
+            <h3>🎥 Roteiro de Vídeo (Máx 60s)</h3>
+            <div class="video-box" id="mVideo"></div>
+        </div>
 
-            <div class="script-box" style="background: #eef2ff;">
-                <strong>🎯 CTA (Chamada para Ação):</strong>
-                <p id="ctaText"></p>
-            </div>
+        <div class="script-section">
+            <h3>🎯 CTAs de Venda (Conversão no Direct)</h3>
+            <div class="cta-container" id="mCta"></div>
         </div>
     </div>
+</div>
 
-    <script>
-        const contentData = {
-            1: { topic: "Apresentação e Serviços", carousel: "Slide 1: Quem sou eu? | Slide 2: O que eu faço? | Slide 3: Criação de roteiros | Slide 4: Edição de vídeos.", video: "Inicie com: 'Você sabia que não precisa gerenciar seu perfil sozinho?'", cta: "Me mande um Direct para orçar seu primeiro mês!" },
-            4: { topic: "Importância do Roteiro", carousel: "Por que postar sem roteiro quebra seu engajamento?", video: "Mostre os bastidores da criação de um roteiro estratégico.", cta: "Quer um roteiro assim? Chama no Direct!" },
-            7: { topic: "Dica de Edição TikTok", carousel: "3 erros que matam sua retenção no TikTok.", video: "Tutorial rápido de um corte dinâmico.", cta: "Eu faço essa edição para você. Link na bio ou Direct." },
-            12: { topic: "Calendário Editorial", carousel: "Como organizar 30 dias de posts em 1 hora.", video: "Mostre este calendário que estou usando agora!", cta: "Garanta seu calendário personalizado via Direct." },
-            15: { topic: "Story que Vende", carousel: "O que postar nos Stories para atrair clientes.", video: "Dica: Fale sobre uma dor do seu cliente.", cta: "Responda 'EU QUERO' no Direct." }
-            // Adicione mais dias aqui conforme necessário
+<script>
+    const temas = [
+        "Por que seu TikTok parou de entregar?", "Como criei 30 dias de roteiros em 1h", "O segredo do carrossel que viraliza",
+        "Social Media: O que eu faço de verdade", "3 Erros fatais na sua bio do TikTok", "Minha rotina de edição dinâmica",
+        "Por que o direct é sua melhor ferramenta", "Respondendo a dúvida: 'Quanto custa?'", "Como delegar sua criação de conteúdo",
+        "O poder de um bom roteiro de 60s", "Análise de um carrossel de sucesso", "Por que você precisa de um Social Media",
+        "Gatilhos mentais que funcionam no TikTok", "Como atrair clientes com vídeos simples", "Minha ferramenta secreta de design",
+        "A evolução do Social Media para 2026", "Checklist do post perfeito", "Venda sem parecer que está vendendo",
+        "Como organizar seu Google Drive hoje", "O erro do iniciante no Social Media", "Design estratégico vs Design bonito",
+        "Meu portfólio de edição de vídeo", "Storytelling para prestadores de serviço", "Respondendo críticas no direct",
+        "O futuro dos vídeos curtos", "Como fechar seu primeiro contrato", "Bastidores: Editando um vídeo real",
+        "A importância do acompanhamento", "Por que não faço gerenciamento completo", "O que postar quando não tem ideias", "Metas para Junho 2026"
+    ];
+
+    const dataBase = {};
+    temas.forEach((tema, index) => {
+        const dia = index + 1;
+        dataBase[dia] = {
+            title: tema,
+            carousel: [
+                "Slide 1 (Capa): " + tema + " (Frase de impacto + elemento visual)",
+                "Slide 2: O problema: 'Você já sentiu que seu conteúdo não sai do lugar?'",
+                "Slide 3: O contexto: Explique o porquê isso acontece em 2026.",
+                "Slide 4: A solução 1: Explique como seu serviço de roteiro resolve isso.",
+                "Slide 5: A solução 2: Mostre a importância da edição dinâmica.",
+                "Slide 6: Benefício: O tempo que o cliente ganha delegando isso.",
+                "Slide 7 (CTA): Gancho final: 'Não faça isso sozinho. Leia a legenda.'"
+            ],
+            video: "[00s-05s] GANCHO: Se você quer que o TikTok venda seu serviço em 2026, você precisa parar de cometer esse erro: " + tema.toLowerCase() + ".\n\n[05s-40s] DESENVOLVIMENTO: Muita gente foca em visualizações, mas como Social Media, eu foco em conversão. O segredo está no roteiro estratégico e numa edição que segura o olho do usuário até o final. Eu cuido de todo o seu calendário, roteiros e edição para você só se preocupar em atender o cliente.\n\n[40s-60s] CTA: Quer parar de perder tempo? Me manda um DIRECT agora!",
+            ctas: [
+                "Me mande um DIRECT com a palavra 'QUERO' para conversarmos.",
+                "Cansado de postar e não vender? Me chama no Direct agora.",
+                "Eu tenho 2 vagas abertas para este mês. Mande 'OI' no Direct."
+            ]
         };
+    });
 
-        let currentDayOpen = null;
-        const statuses = JSON.parse(localStorage.getItem('sm_status')) || {};
+    let currentDay = null;
+    let savedStatus = JSON.parse(localStorage.getItem('sm_may_2026')) || {};
 
-        function initCalendar() {
-            const calendar = document.getElementById('calendar');
-            // Maio 2026 começa na Sexta-feira (dia 5 na contagem 0-6)
-            for (let i = 0; i < 5; i++) {
-                const empty = document.createElement('div');
-                calendar.appendChild(empty);
-            }
+    function initCalendar() {
+        const grid = document.getElementById('calendar');
+        // Maio 2026 começa na Sexta (Dia da semana 5)
+        for(let i=0; i<5; i++) grid.appendChild(document.createElement('div'));
 
-            for (let day = 1; day <= 31; day++) {
-                const card = document.createElement('div');
-                card.className = 'day-card';
-                card.onclick = () => openModal(day);
-                
-                const status = statuses[day] || 'not-started';
-                const topic = contentData[day] ? contentData[day].topic : "Definir Tema...";
-
-                card.innerHTML = `
-                    <div>
-                        <div class="date-num">${day}</div>
-                        <div class="topic-preview">${topic}</div>
-                    </div>
-                    <div id="dot-${day}" class="status-dot" style="background: ${getStatusColor(status)}"></div>
-                `;
-                calendar.appendChild(card);
-            }
-        }
-
-        function getStatusColor(status) {
-            if (status === 'started') return '#FFD700';
-            if (status === 'finished') return '#28a745';
-            return '#000000';
-        }
-
-        function openModal(day) {
-            currentDayOpen = day;
-            const data = contentData[day] || { topic: "Tema Livre", carousel: "Defina o conteúdo do carrossel...", video: "Tente gravar um vídeo curto!", cta: "Me chame no Direct!" };
+        for(let d=1; d<=31; d++) {
+            const card = document.createElement('div');
+            card.className = 'day-card';
+            const status = savedStatus[d] || 'not-started';
             
-            document.getElementById('modalTitle').innerText = `Dia ${day}: ${data.topic}`;
-            document.getElementById('carouselScript').innerText = data.carousel;
-            document.getElementById('videoScript').innerText = data.video;
-            document.getElementById('ctaText').innerText = data.cta;
-            
-            const status = statuses[day] || 'not-started';
-            document.getElementById('statusSelector').value = status;
-            updateStatusLabel(status);
-            
-            document.getElementById('scriptModal').style.display = "block";
+            card.innerHTML = `
+                <div class="day-header">
+                    <span class="day-num">${d}</span>
+                    <div class="status-dot" id="dot-${d}" style="background:${getStatusColor(status)}"></div>
+                </div>
+                <div class="day-topic">${dataBase[d].title}</div>
+            `;
+            card.onclick = () => openDay(d);
+            grid.appendChild(card);
         }
+    }
 
-        function closeModal() {
-            document.getElementById('scriptModal').style.display = "none";
-        }
+    function getStatusColor(s) {
+        if(s === 'started') return '#facc15';
+        if(s === 'finished') return '#22c55e';
+        return '#000000';
+    }
 
-        function updateStatus() {
-            const newStatus = document.getElementById('statusSelector').value;
-            statuses[currentDayOpen] = newStatus;
-            localStorage.setItem('sm_status', JSON.stringify(statuses));
-            
-            document.getElementById(`dot-${currentDayOpen}`).style.background = getStatusColor(newStatus);
-            updateStatusLabel(newStatus);
-        }
+    function openDay(d) {
+        currentDay = d;
+        const data = dataBase[d];
+        document.getElementById('mTitle').innerText = `Dia ${d}: ${data.title}`;
+        document.getElementById('mCarousel').innerHTML = data.carousel.map((s, i) => `<div class="slide-item"><strong>Slide ${i+1}:</strong> ${s}</div>`).join('');
+        document.getElementById('mVideo').innerText = data.video;
+        document.getElementById('mCta').innerHTML = data.ctas.map(c => `<div class="cta-item">${c}</div>`).join('');
+        document.getElementById('statusSelect').value = savedStatus[d] || 'not-started';
+        document.getElementById('modal').style.display = 'block';
+    }
 
-        function updateStatusLabel(status) {
-            const label = document.getElementById('modalStatusLabel');
-            if (status === 'not-started') label.innerHTML = '<span class="badge bg-black">Não Iniciado</span>';
-            else if (status === 'started') label.innerHTML = '<span class="badge bg-yellow">Iniciado</span>';
-            else label.innerHTML = '<span class="badge bg-green">Finalizado</span>';
-        }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('scriptModal')) closeModal();
-        }
+    function updateStatus() {
+        const val = document.getElementById('statusSelect').value;
+        savedStatus[currentDay] = val;
+        localStorage.setItem('sm_may_2026', JSON.stringify(savedStatus));
+        document.getElementById(`dot-${currentDay}`).style.background = getStatusColor(val);
+    }
 
-        initCalendar();
-    </script>
+    initCalendar();
+</script>
+
 </body>
 </html>
